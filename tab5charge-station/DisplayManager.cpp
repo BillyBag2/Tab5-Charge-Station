@@ -54,21 +54,23 @@ void DisplayManager::render(const ChargerUiState& state) {
   canvas_.setTextSize(kInfoTextScale);
   canvas_.setTextColor(kTextColor, kBackgroundColor);
 
+  const int line_height = canvas_.fontHeight() + 12;
+
   int cursor_y = 30;
   canvas_.setCursor(20, cursor_y);
   canvas_.printf("Charging: %s", state.chargingEnabled ? "On" : "Off");
 
-  cursor_y += 60;
+  cursor_y += line_height;
   canvas_.setCursor(20, cursor_y);
   canvas_.printf("Rate/Target: %s / %u mA", ChargeRateToString(state.chargeRate),
                  static_cast<unsigned>(state.targetCurrent));
 
-  cursor_y += 60;
+  cursor_y += line_height;
   canvas_.setCursor(20, cursor_y);
   canvas_.printf("Battery: %.0f %% (%s)", state.battery.batteryPercent,
                  state.battery.isCharging ? "Charging" : "Idle");
 
-  cursor_y += 60;
+  cursor_y += line_height;
   canvas_.setCursor(20, cursor_y);
   canvas_.printf("Volt/Current: %.2f V / %.0f mA", state.battery.batteryVoltage,
                  state.battery.batteryCurrent);
