@@ -1,0 +1,14 @@
+default_fqbn: m5stack:esp32:m5stack_tab5:UploadSpeed=921600,USBMode=hwcdc,CDCOnBoot=cdc,MSCOnBoot=default,DFUOnBoot=default,UploadMode=default,CPUFreq=360,FlashFreq=80,FlashMode=qio,FlashSize=16M,PartitionScheme=default,DebugLevel=none,PSRAM=enabled,EraseFlash=none,JTAGAdapter=default
+default_port: /dev/ttyACM0
+
+# (Optional but recommended) Pin the exact platform & source:
+profiles:
+  tab5:
+    fqbn: m5stack:esp32:m5stack_tab5:UploadSpeed=921600,USBMode=hwcdc,CDCOnBoot=cdc,MSCOnBoot=default,DFUOnBoot=default,UploadMode=default,CPUFreq=360,FlashFreq=80,FlashMode=qio,FlashSize=16M,PartitionScheme=default,DebugLevel=none,PSRAM=enabled,EraseFlash=none,JTAGAdapter=default
+    platforms:
+      - platform: m5stack:esp32 (3.2.2)
+        platform_index_url: https://static-cdn.m5stack.com/resource/arduino/package_m5stack_index.json
+    libraries:
+      - M5Unified (0.2.8)
+      - M5GFX (0.2.13)
+default_profile: tab5
