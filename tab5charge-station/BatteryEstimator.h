@@ -5,8 +5,12 @@
 struct BatteryStatus {
   float batteryVoltage = 0.0f;   // Volts
   float batteryCurrent = 0.0f;   // Milliamps (positive when charging)
+  float batteryWatts = 0.0f;     // Watts
   float batteryPercent = 0.0f;   // Percentage 0-100
   bool isCharging = false;
+  float vbusVoltage = 0.0f;      // Volts
+  float vbusCurrent = 0.0f;      // Milliamps
+  float vbusWatts = 0.0f;        // Watts
 };
 
 class BatteryEstimator {

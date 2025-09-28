@@ -72,8 +72,8 @@ void DisplayManager::render(const ChargerUiState& state) {
 
   cursor_y += line_height;
   canvas_.setCursor(20, cursor_y);
-  canvas_.printf("Volt/Current: %.2f V / %.0f mA", state.battery.batteryVoltage,
-                 state.battery.batteryCurrent);
+  canvas_.printf("  %.2f V / %.0f mA / %.2f W", state.battery.batteryVoltage,
+                 state.battery.batteryCurrent, state.battery.batteryWatts);
 
   canvas_.setTextSize(1);
 

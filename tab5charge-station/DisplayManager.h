@@ -11,6 +11,7 @@ struct ChargerUiState {
   ChargeRate chargeRate = ChargeRate::kNormal;
   BatteryStatus battery;
   uint16_t targetCurrent = 0;  // milliamps
+  float targetWatts = 0.0f;
 };
 
 enum class UiAction {

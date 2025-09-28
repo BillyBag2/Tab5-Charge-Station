@@ -21,6 +21,7 @@ void refreshUi() {
                                  ? g_charge_controller.targetChargeCurrent()
                                  : 0;
   g_ui_state.battery = g_battery_estimator.sample();
+  g_ui_state.targetWatts = (g_ui_state.targetCurrent * g_ui_state.battery.batteryVoltage) / 1000.0f;
   g_display_manager.render(g_ui_state);
   g_last_render_ms = millis();
 }
