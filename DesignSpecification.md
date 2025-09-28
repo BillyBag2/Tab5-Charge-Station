@@ -14,3 +14,9 @@
 - [ ] Create separate source files for different features of the code and
       include files with APIs to those features.
 - [ ] Follow the Arduino IDE coding style.
+
+## Questions
+
+- What GPIO or power management primitive should be used on the TAB5 to truly enable/disable the charger hardware?
+- Are there validated slow/normal/fast charge current targets we should enforce for battery longevity on this design?
+- Should the display also surface input power metrics (USB/solar/etc.) or logging beyond the live telemetry currently shown?
