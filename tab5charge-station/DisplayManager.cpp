@@ -11,68 +11,69 @@ constexpr uint16_t kButtonSecondaryColor = TFT_NAVY;
 constexpr uint16_t kButtonBorderColor = TFT_WHITE;
 constexpr int16_t kCornerRadius = 14;
 constexpr int16_t kSelectedBorderPadding = 4;
-constexpr int16_t kButtonHeight = 60;
+constexpr int16_t kButtonHeight = 70;
 constexpr int16_t kButtonMargin = 20;
-constexpr int16_t kButtonGap = 12;
+constexpr int16_t kButtonGap = 16;
 }
 
 void DisplayManager::begin() {
   auto& display = M5.Display;
   display.setRotation(1);
   display.fillScreen(kBackgroundColor);
-  display.setFont(&lgfx::v1::fonts::FreeSansBold12pt7b);
+  display.setFont(&lgfx::v1::fonts::FreeSansBold18pt7b);
   display.setTextSize(1);
   display.setTextColor(kTextColor, kBackgroundColor);
 
   const int16_t screen_width = display.width();
 
-  const int16_t rate_column_x = (screen_width / 2) + (kButtonMargin / 2);
-  const int16_t rate_column_width = screen_width - rate_column_x - kButtonMargin;
+  const int16_t screen_height = display.height();
 
-  for (int i = 0; i < 3; ++i) {
-    rate_buttons_[i].x = rate_column_x;
-    rate_buttons_[i].y = kButtonMargin + i * (kButtonHeight + kButtonGap);
-    rate_buttons_[i].w = rate_column_width;
-    rate_buttons_[i].h = kButtonHeight;
-  }
+  const int16_t available_width = screen_width - (2 * kButtonMargin);
+  const int16_t total_gap = 3 * kButtonGap;
+  const int16_t button_width = (available_width - total_gap) / 4;
+  const int16_t bottom_y = screen_height - kButtonMargin - kButtonHeight;
 
   toggle_button_.x = kButtonMargin;
-  toggle_button_.y = rate_buttons_[2].y;
-  toggle_button_.w = rate_column_x - toggle_button_.x - kButtonGap;
+  toggle_button_.y = bottom_y;
+  toggle_button_.w = button_width;
   toggle_button_.h = kButtonHeight;
+
+  for (int i = 0; i < 3; ++i) {
+    rate_buttons_[i].x = toggle_button_.x + (button_width + kButtonGap) * (i + 1);
+    rate_buttons_[i].y = bottom_y;
+    rate_buttons_[i].w = button_width;
+    rate_buttons_[i].h = kButtonHeight;
+  }
 }
 
 void DisplayManager::render(const ChargerUiState& state) {
   auto& display = M5.Display;
+  display.waitDisplay();
   display.startWrite();
   display.fillScreen(kBackgroundColor);
 
-  display.setFont(&lgfx::v1::fonts::FreeSansBold12pt7b);
+  display.setFont(&lgfx::v1::fonts::FreeSansBold18pt7b);
   display.setTextSize(1);
   display.setTextColor(kTextColor, kBackgroundColor);
 
-  display.setClipRect(0, 0, toggle_button_.x + toggle_button_.w, display.height());
-
-  int cursor_y = 30;
+  int cursor_y = 40;
   display.setCursor(20, cursor_y);
   display.printf("Charging: %s", state.chargingEnabled ? "On" : "Off");
 
-  cursor_y += 40;
+  cursor_y += 55;
   display.setCursor(20, cursor_y);
   display.printf("Rate/Target: %s / %u mA", ChargeRateToString(state.chargeRate),
                  static_cast<unsigned>(state.targetCurrent));
 
-  cursor_y += 40;
+  cursor_y += 55;
   display.setCursor(20, cursor_y);
   display.printf("Battery: %.0f %% (%s)", state.battery.batteryPercent,
                  state.battery.isCharging ? "Charging" : "Idle");
 
-  cursor_y += 40;
+  cursor_y += 55;
   display.setCursor(20, cursor_y);
   display.printf("Volt/Current: %.2f V / %.0f mA", state.battery.batteryVoltage,
                  state.battery.batteryCurrent);
-
-  display.clearClipRect();
 
   drawButton(toggle_button_,
              state.chargingEnabled ? kButtonEnabledColor : kButtonDisabledColor,
@@ -89,6 +90,7 @@ void DisplayManager::render(const ChargerUiState& state) {
   }
 
   display.endWrite();
+  display.waitDisplay();
 }
 
 UiAction DisplayManager::processInput() {
@@ -137,12 +139,12 @@ void DisplayManager::drawButton(const Button& button,
   display.fillRoundRect(button.x, button.y, button.w, button.h, kCornerRadius, fill_color);
   display.drawRoundRect(button.x, button.y, button.w, button.h, kCornerRadius, border_color);
 
-  display.setFont(&lgfx::v1::fonts::FreeSansBold9pt7b);
+  display.setFont(&lgfx::v1::fonts::FreeSansBold12pt7b);
   display.setTextDatum(textdatum_t::middle_center);
   display.setTextColor(TFT_WHITE, fill_color);
   display.drawString(label, button.x + button.w / 2, button.y + button.h / 2);
 
-  display.setFont(&lgfx::v1::fonts::FreeSansBold12pt7b);
+  display.setFont(&lgfx::v1::fonts::FreeSansBold18pt7b);
   display.setTextDatum(textdatum_t::top_left);
   display.setTextColor(kTextColor, kBackgroundColor);
 }
