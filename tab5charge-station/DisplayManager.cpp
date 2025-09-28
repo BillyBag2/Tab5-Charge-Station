@@ -1,7 +1,5 @@
 #include "DisplayManager.h"
 
-#include <M5GFX.h>
-
 namespace {
 constexpr uint16_t kBackgroundColor = TFT_BLACK;
 constexpr uint16_t kTextColor = TFT_WHITE;
@@ -14,18 +12,21 @@ constexpr int16_t kSelectedBorderPadding = 4;
 constexpr int16_t kButtonHeight = 70;
 constexpr int16_t kButtonMargin = 20;
 constexpr int16_t kButtonGap = 16;
+constexpr int kInfoTextScale = 2;  // Doubles the rendered size.
 }
 
 void DisplayManager::begin() {
   auto& display = M5.Display;
   display.setRotation(1);
   display.fillScreen(kBackgroundColor);
-  display.setFont(&lgfx::v1::fonts::FreeSansBold18pt7b);
-  display.setTextSize(1);
-  display.setTextColor(kTextColor, kBackgroundColor);
+
+  canvas_.setColorDepth(16);
+  canvas_.setPsram(true);
+  canvas_.createSprite(display.width(), display.height());
+  canvas_.setTextColor(kTextColor, kBackgroundColor);
+  canvas_.setFont(&lgfx::v1::fonts::FreeSansBold18pt7b);
 
   const int16_t screen_width = display.width();
-
   const int16_t screen_height = display.height();
 
   const int16_t available_width = screen_width - (2 * kButtonMargin);
@@ -47,33 +48,32 @@ void DisplayManager::begin() {
 }
 
 void DisplayManager::render(const ChargerUiState& state) {
-  auto& display = M5.Display;
-  display.waitDisplay();
-  display.startWrite();
-  display.fillScreen(kBackgroundColor);
+  canvas_.fillScreen(kBackgroundColor);
 
-  display.setFont(&lgfx::v1::fonts::FreeSansBold18pt7b);
-  display.setTextSize(1);
-  display.setTextColor(kTextColor, kBackgroundColor);
+  canvas_.setFont(&lgfx::v1::fonts::FreeSansBold18pt7b);
+  canvas_.setTextSize(kInfoTextScale);
+  canvas_.setTextColor(kTextColor, kBackgroundColor);
 
-  int cursor_y = 40;
-  display.setCursor(20, cursor_y);
-  display.printf("Charging: %s", state.chargingEnabled ? "On" : "Off");
+  int cursor_y = 30;
+  canvas_.setCursor(20, cursor_y);
+  canvas_.printf("Charging: %s", state.chargingEnabled ? "On" : "Off");
 
-  cursor_y += 55;
-  display.setCursor(20, cursor_y);
-  display.printf("Rate/Target: %s / %u mA", ChargeRateToString(state.chargeRate),
+  cursor_y += 60;
+  canvas_.setCursor(20, cursor_y);
+  canvas_.printf("Rate/Target: %s / %u mA", ChargeRateToString(state.chargeRate),
                  static_cast<unsigned>(state.targetCurrent));
 
-  cursor_y += 55;
-  display.setCursor(20, cursor_y);
-  display.printf("Battery: %.0f %% (%s)", state.battery.batteryPercent,
+  cursor_y += 60;
+  canvas_.setCursor(20, cursor_y);
+  canvas_.printf("Battery: %.0f %% (%s)", state.battery.batteryPercent,
                  state.battery.isCharging ? "Charging" : "Idle");
 
-  cursor_y += 55;
-  display.setCursor(20, cursor_y);
-  display.printf("Volt/Current: %.2f V / %.0f mA", state.battery.batteryVoltage,
+  cursor_y += 60;
+  canvas_.setCursor(20, cursor_y);
+  canvas_.printf("Volt/Current: %.2f V / %.0f mA", state.battery.batteryVoltage,
                  state.battery.batteryCurrent);
+
+  canvas_.setTextSize(1);
 
   drawButton(toggle_button_,
              state.chargingEnabled ? kButtonEnabledColor : kButtonDisabledColor,
@@ -89,8 +89,7 @@ void DisplayManager::render(const ChargerUiState& state) {
                kButtonBorderColor);
   }
 
-  display.endWrite();
-  display.waitDisplay();
+  canvas_.pushSprite(&M5.Display, 0, 0);
 }
 
 UiAction DisplayManager::processInput() {
@@ -126,25 +125,24 @@ void DisplayManager::drawButton(const Button& button,
                                 const char* label,
                                 bool selected,
                                 uint16_t border_color) {
-  auto& display = M5.Display;
-
   if (selected) {
-    display.fillRoundRect(button.x - kSelectedBorderPadding,
+    canvas_.fillRoundRect(button.x - kSelectedBorderPadding,
                           button.y - kSelectedBorderPadding,
                           button.w + (kSelectedBorderPadding * 2),
                           button.h + (kSelectedBorderPadding * 2),
                           kCornerRadius + kSelectedBorderPadding, border_color);
   }
 
-  display.fillRoundRect(button.x, button.y, button.w, button.h, kCornerRadius, fill_color);
-  display.drawRoundRect(button.x, button.y, button.w, button.h, kCornerRadius, border_color);
+  canvas_.fillRoundRect(button.x, button.y, button.w, button.h, kCornerRadius, fill_color);
+  canvas_.drawRoundRect(button.x, button.y, button.w, button.h, kCornerRadius, border_color);
 
-  display.setFont(&lgfx::v1::fonts::FreeSansBold12pt7b);
-  display.setTextDatum(textdatum_t::middle_center);
-  display.setTextColor(TFT_WHITE, fill_color);
-  display.drawString(label, button.x + button.w / 2, button.y + button.h / 2);
+  canvas_.setFont(&lgfx::v1::fonts::FreeSansBold12pt7b);
+  canvas_.setTextSize(1);
+  canvas_.setTextDatum(textdatum_t::middle_center);
+  canvas_.setTextColor(TFT_WHITE, fill_color);
+  canvas_.drawString(label, button.x + button.w / 2, button.y + button.h / 2);
 
-  display.setFont(&lgfx::v1::fonts::FreeSansBold18pt7b);
-  display.setTextDatum(textdatum_t::top_left);
-  display.setTextColor(kTextColor, kBackgroundColor);
+  canvas_.setFont(&lgfx::v1::fonts::FreeSansBold18pt7b);
+  canvas_.setTextDatum(textdatum_t::top_left);
+  canvas_.setTextColor(kTextColor, kBackgroundColor);
 }

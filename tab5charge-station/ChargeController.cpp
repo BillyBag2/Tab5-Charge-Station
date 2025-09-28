@@ -93,6 +93,7 @@ uint16_t ChargeController::targetChargeCurrent() const {
 void ChargeController::applyChargeSettings() {
   const uint16_t current = charge_enabled_ ? targetChargeCurrent() : 0;
   M5.Power.setChargeCurrent(current);
+  M5.Power.setBatteryCharge(charge_enabled_);
 }
 
 void ChargeController::persistState() {

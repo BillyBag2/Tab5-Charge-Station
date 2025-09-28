@@ -14,7 +14,8 @@ BatteryStatus BatteryEstimator::sample() const {
   float raw_voltage = M5.Power.getBatteryVoltage();
   status.batteryVoltage = (raw_voltage > 20.0f) ? (raw_voltage * 0.001f) : raw_voltage;
 
-  status.batteryCurrent = M5.Power.getBatteryCurrent();
+  float raw_current = M5.Power.getBatteryCurrent();
+  status.batteryCurrent = -raw_current;  // Invert so charging currents read positive.
 
   // Heuristic: positive current means charging.
   status.isCharging = status.batteryCurrent > 10.0f;  // mA threshold to suppress noise.

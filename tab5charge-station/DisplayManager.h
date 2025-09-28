@@ -1,6 +1,7 @@
 #pragma once
 
 #include <M5Unified.h>
+#include <M5GFX.h>
 
 #include "BatteryEstimator.h"
 #include "ChargeController.h"
@@ -49,4 +50,5 @@ class DisplayManager {
   Button toggle_button_;
   Button rate_buttons_[3];
   bool touch_active_ = false;
+  lgfx::v1::LGFX_Sprite canvas_;
 };

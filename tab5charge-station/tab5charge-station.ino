@@ -17,7 +17,9 @@ uint32_t g_last_render_ms = 0;
 void refreshUi() {
   g_ui_state.chargingEnabled = g_charge_controller.isChargingEnabled();
   g_ui_state.chargeRate = g_charge_controller.getChargeRate();
-  g_ui_state.targetCurrent = g_charge_controller.targetChargeCurrent();
+  g_ui_state.targetCurrent = g_ui_state.chargingEnabled
+                                 ? g_charge_controller.targetChargeCurrent()
+                                 : 0;
   g_ui_state.battery = g_battery_estimator.sample();
   g_display_manager.render(g_ui_state);
   g_last_render_ms = millis();
